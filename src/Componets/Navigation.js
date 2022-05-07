@@ -14,6 +14,7 @@ export default function Navigation() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="/">Inicio</Nav.Link>
+            <Nav.Link href="/UrnaElectoral">Urna Electoral</Nav.Link>
             <Nav.Link href="/EmitirVoto">EmitirVoto</Nav.Link>
             <NavDropdown title="Juanito Perez" id="basic-nav-dropdown">
               <NavDropdown.Item href="#logout">Cerar Sesión</NavDropdown.Item>
