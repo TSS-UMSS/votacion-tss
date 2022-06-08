@@ -41,7 +41,6 @@ export default function Postularme() {
     console.log("Datos actulizados")
   };
 
-  
     return (
       <div className="Container">
         <div>
