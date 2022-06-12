@@ -15,7 +15,7 @@ import { getAuth} from 'firebase/auth'
 export default function EmitirVoto(props) {
   const [modalShow, setModalShow] = useState(false);
   const [show, setShow] = useState(false);
-  const [mensaje, setMensaje] = useState("hola papu como estas !! ?")
+  const [mensaje, setMensaje] = useState("Hash Generado");
   
 
   const [lista, setList] = useState([]);
@@ -146,8 +146,7 @@ export default function EmitirVoto(props) {
       }
     }
     test(); 
-    //console.log("estos son los datos")
-    //console.log(lista)
+    console.log("estos son los datos" + lista)
    }, [bandera]);
 
    useEffect(() => {
