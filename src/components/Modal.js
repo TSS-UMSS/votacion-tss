@@ -1,12 +1,6 @@
 import React from 'react'
 import { Modal, Button } from 'react-bootstrap'
-
-//import Blockchain from './blockchain/blockchain';
-//import block from './blockchain/block';
-
 const SHA256 = require('crypto-js/sha256')
-const Blockchain = require('./blockchain/blockchain');
-const Block = require('./blockchain/block');
 
 export default function Modales(props) {
   function generar (){
