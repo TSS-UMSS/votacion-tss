@@ -55,7 +55,7 @@ export default function EmitirVoto(props) {
         //console.log(foundName);
       }
     }
-    //console.log(votoElegido);
+    console.log(votoElegido);
     guardarEnUsuario(votoElegido,hashGenerado,voteDate);
   }
 
@@ -211,6 +211,13 @@ export default function EmitirVoto(props) {
     }else{
       setValido(false)
     }
+    
+    //let fecha = hoy.getDate() + '-' + ( hoy.getMonth() + 1 ) + '-' + hoy.getFullYear();
+    //let hora = hoy.getHours() + ':' + hoy.getMinutes() + ':' + hoy.getSeconds();
+    // console.log(fecha)
+    // console.log(hora)
+
+    
   }
   cumple();
 }, []);
