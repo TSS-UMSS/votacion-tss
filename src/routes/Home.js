@@ -1,7 +1,7 @@
 import React from "react";
-import Pie from "./charts/pie";
-import Bar from "./charts/bar";
-import Tabla from "./charts/tabla";
+import Pie from "../components/charts/pie";
+import Bar from "../components/charts/bar";
+import Tabla from "../components/charts/tabla";
 
 import { useState,useEffect } from "react";
 import { collection, getDocs } from 'firebase/firestore'
@@ -19,6 +19,7 @@ const Home = () => {
   }
   getUsers()
   },[])
+
   
   // obtener datos de firestore
   const resultados =users.map((persona)=>{

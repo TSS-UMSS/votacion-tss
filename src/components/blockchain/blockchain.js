@@ -1,7 +1,6 @@
 const Block = require("./block");
 const SHA256 = require ("crypto-js/sha256"); 
 const { async } = require("@firebase/util");
-
 class Blockchain{
     constructor(){
         //coinstructor para todos los bloques
@@ -18,14 +17,13 @@ class Blockchain{
         }
     }
     //recibe un bloque de la cadena
-    addBlock(Block){
+    addBlock(block){
         let self = this;
-        return new Promise((resolve, reject) => {
+        return new Promise( async(resolve, reject) => {
             //obtenemos la posicion del bloque
             block.height = self.chain.length;
             //ahora el tiempo de creación
             block.time = new Date().getTime().toString();
-
             //comprobacion de la cadena en el bloque
             if(self.chain.length > 0){
                 block.previousBlockHash = self.chain[self.chain.length - 1].hash;
@@ -36,14 +34,12 @@ class Blockchain{
                 //finalizamos la promesa para no validar la cadena
                 reject(new Error("La cadena no es valida: ", errors));
             }
-
             block.hash = SHA256(JSON.stringify(block)).toString();
             //añadimos al arreglo
             self.chain.push(block);
             resolve(block);
         });
     }
-
     validateChain(){
         let self = this;
         const errors = [];
@@ -52,7 +48,7 @@ class Blockchain{
             self.chain.map( async(block) => {
                 try {
                     let isValid = await block.validate();
-                    if(!validate){
+                    if(!isValid){
                         errors.push(new Error('El bloque no es valido'));
                     }
                 } catch (error) {
@@ -70,5 +66,4 @@ class Blockchain{
         }
     }
 }
-
 module.exports = Blockchain;

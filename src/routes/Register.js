@@ -5,7 +5,8 @@ import { Card, Form, Button } from "react-bootstrap";
 import { app } from "../confs/firebaseConf";
 import { firestore } from "../confs/firebaseConf";
 import { collection, getDocs, addDoc, setDoc, doc } from "firebase/firestore";
-import { getAuth} from 'firebase/auth'
+import { getAuth} from 'firebase/auth';
+import { SHA256 } from "crypto-js";
 
 const Register = () => {
   const [nombre, setNombre] = useState("");
@@ -13,17 +14,29 @@ const Register = () => {
   const [ci, setCi] = useState("");
   const [direccion, setDireccion] = useState("");
   const [celular, setCelular] = useState("");
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [hash, setHash] = useState("");
 
   const [UsuarioComun, setUsuarioComun] = useState([]);
 
   const usuarioCollection = collection(firestore, "UsuarioComun");
-
   const navegate = useNavigate();
-
   const { registerUser } = useContext(UserContext);
+
+  function hashGenerado() {
+    var hash = SHA256(Math.random().toString()).toString();
+    setHash(hash);
+    console.log(hash);
+    return hash;
+  }
+  //let hashGenerado = SHA256(JSON.stringify()).toString()
+  //hashGenerado = Math.random()
+  //console.log(hashGenerado);
+  //console.log(SHA256(JSON.stringify()).toString())
+  //console.log(SHA256(Math.random().toString()).toString())
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +44,7 @@ const Register = () => {
     try {
       await registerUser(email, password);
       console.log("usuario creado");
-      navegate("/user");
+      navegate("/");
       const user = getAuth(app).currentUser.uid;
       await setDoc(doc(firestore, "UsuarioComun", user), {
         Apellido: apellido,
@@ -42,6 +55,7 @@ const Register = () => {
         HashSemilla:"",
         Nombre: nombre,
         PostularEstado:false,
+        PuedePostular : true,
         PostularNombrePartido:"",
         PostularSigla:"",
         VotoBlanco:0,
@@ -49,7 +63,8 @@ const Register = () => {
         VotoFecha:"",
         VotoHash:" ",
         VotoNulo:0,
-        VotoPartidoSigla:""
+        VotoPartidoSigla:"",
+        //HashSemilla:hash
       });
     } catch (error) {
       console.log(error.code);
@@ -70,6 +85,7 @@ const Register = () => {
     // }
   };
 
+
   return (
     <div
       style={{ justifyContent: "center", display: "flex", marginTop: "150px" }}
@@ -80,7 +96,7 @@ const Register = () => {
       >
         <Card.Header style={{ backgroundColor: "#012345" }}>
           <h3 className="text-center mb-2" style={{ color: "white" }}>
-            Registarse
+            Registrarse
           </h3>
         </Card.Header>
         <Card.Body style={{ backgroundColor: "#5668d1" }}>
