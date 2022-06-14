@@ -31,7 +31,7 @@ export default class urna extends Component {
           trigger={() => {
             return (
               <a href="#" className="imprimir">
-                🖨️ Imprimir{" "}
+                <h5>🖨️ Imprimir</h5>
               </a>
             );
           }}

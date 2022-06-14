@@ -8,7 +8,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../confs/firebaseConf";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
 import urna from "../components/urna";
-import { Container } from "react-bootstrap";
+import { Container, Nav } from "react-bootstrap";
 import jsPDF from "jspdf";
 
 const Home = () => {
@@ -82,7 +82,10 @@ const Home = () => {
     content: () => componentRef.currente,
   }); */
 
-  // var doc = new jsPDF();
+  const estilosPDF = (content) => {
+    var doc = new jsPDF();
+    doc.text("Octonyan loves jsPDF", 35, 25);
+  };
 
   // doc.text("Octanyan");
 
@@ -92,7 +95,7 @@ const Home = () => {
         trigger={() => {
           return (
             <a href="#" className="imprimir">
-              🖨️ Imprimir{" "}
+              <h5>🖨️ Imprimir</h5>
             </a>
           );
         }}
@@ -100,7 +103,7 @@ const Home = () => {
         documentTitle="Esto es un documento"
         pageStyle="print"
       />
-
+      <div id="content"></div>
       <Container ref={componentRef}>
         {esta() ? (
           <>
