@@ -4,7 +4,11 @@ import Bar from "../components/charts/bar";
 import Tabla from "../components/charts/tabla";
 
 import { useState,useEffect } from "react";
+<<<<<<< Updated upstream
 import { collection, getDocs, query, where } from 'firebase/firestore'
+=======
+import { collection, getDocs, setDoc } from 'firebase/firestore'
+>>>>>>> Stashed changes
 import { firestore } from "../confs/firebaseConf";
 import { Spinner } from "react-bootstrap";
 
