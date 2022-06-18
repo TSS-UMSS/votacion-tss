@@ -1,125 +1,141 @@
-import React from "react";
+import React, { useRef } from "react";
 import Pie from "../components/charts/pie";
 import Bar from "../components/charts/bar";
 import Tabla from "../components/charts/tabla";
 
-import { useState,useEffect } from "react";
-<<<<<<< Updated upstream
-import { collection, getDocs, query, where } from 'firebase/firestore'
-=======
-import { collection, getDocs, setDoc } from 'firebase/firestore'
->>>>>>> Stashed changes
+import { useState, useEffect } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "../confs/firebaseConf";
-import { Spinner } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
+import ReactToPrint from "react-to-print";
 
 const Home = () => {
-  const [isStart, setStart] =  useState(true)
-  const [users, setUsers]=useState([])
-  const [nombre, setNombreEleccion] =  useState('');
-  const [descripcion, setDescripcion] =  useState('');
-  const usersCollectionRef = collection(firestore,"PartidosAceptados")
-  useEffect(()=> {
-  //Leer     
-  const getUsers = async () =>{
-      const data = await getDocs(usersCollectionRef)
-      //console.log(data)
-      setUsers(data.docs.map((doc)=>({...doc.data(),id: doc.id})))
+  const [isStart, setStart] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [nombre, setNombreEleccion] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const usersCollectionRef = collection(firestore, "PartidosAceptados");
+  useEffect(() => {
+    const getUsers = async () => {
+      const data = await getDocs(usersCollectionRef);
+      setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
 
-      const q = query(collection(firestore, "AdministrarFechas"), where("Activo", "==", true));
+      const q = query(
+        collection(firestore, "AdministrarFechas"),
+        where("Activo", "==", true)
+      );
       const lafecha = await getDocs(q);
       lafecha.forEach((doc) => {
-        let id = doc.id
-        let tituloEleccion = doc.data().DescripcionEleccion
-        let nombreEleccion = doc.data().NombreEleccion
+        let id = doc.id;
+        let tituloEleccion = doc.data().DescripcionEleccion;
+        let nombreEleccion = doc.data().NombreEleccion;
         setNombreEleccion(nombreEleccion);
         setDescripcion(tituloEleccion);
-      })
-      setStart(false)
-  }
-  getUsers()
-  },[])
+      });
+      setStart(false);
+    };
+    getUsers();
+  }, []);
 
-  
   // obtener datos de firestore
-  const resultados =users.map((persona)=>{
-    const info =  {id:persona.id, name:persona.NombreCandidato, partido:persona.Sigla, votos:persona.Cant}
-    return info  
-  })
-  console.log(users)
+  const resultados = users.map((persona) => {
+    const info = {
+      id: persona.HashSemilla,
+      name: persona.NombreCandidato,
+      partido: persona.Sigla,
+      votos: persona.Cant,
+    };
+    return info;
+  });
 
   //obtener partidos de resultados []
-  const partidos= resultados.map((p)=>{
-    return  p.partido
-  })
+  const partidos = resultados.map((p) => {
+    return p.partido;
+  });
 
   //obtener votos de resultados []
-  const conteo = resultados.map((p)=>{
-    return p.votos
-  })
+  const conteo = resultados.map((p) => {
+    return p.votos;
+  });
   //obtener color de firestore
-  const colores  = users.map((p)=>{
-    return p.Color
-  })
+  const colores = users.map((p) => {
+    return p.Color;
+  });
 
-  //tabla de resultados 
-  const list = resultados 
-  
-  //generar un color aleatorio
-  //var randomColor = "#"+Math.floor(Math.random()*16777215).toString(16);
-  //console.log(randomColor)
+  //tabla de resultados
+  const list = resultados;
 
-  //graficas de resultsados 
+  //graficas de resultsados
   const data = {
     labels: partidos,
     datasets: [
       {
-        label: 'Votos',
+        label: "Votos",
         data: conteo,
-        backgroundColor: colores,        
+        backgroundColor: colores,
         borderWidth: 1,
       },
-    ]
-  }
-  const esta=()=>{
-    if (users.length===0) {
-      return false
+    ],
+  };
+  const componentRef = useRef();
+  const esta = () => {
+    if (users.length === 0) {
+      return false;
     } else {
-      return true
+      return true;
     }
-    
-  }
+  };
   if (isStart) {
     return (
       <div className="Container">
-        <Spinner animation="border" roles="status"  >
+        <Spinner animation="border" roles="status">
           <span className="visually-hidden">Cargando...</span>
         </Spinner>
         <h4 className="p-1">Cargando...</h4>
       </div>
-    )}else{
+    );
+  } else {
     return (
       <div>
-        {esta() ? (
-          <>
-            <h2 className="text-center mb-4 mt-2">{nombre}</h2>
-            <Tabla listas ={list} />
-            <Pie datos={data}/>
-            <Bar datos={data}/>
-            
-          </>
-        ):(
-          <>
-            <div className="Container">
-              <h2>Bienvenido a iVote</h2>
-              <h2>Los resultados de la votación aún no se encuentran disponibles.</h2>
-              <h2>¿Por qué no intentas más tarde?</h2>
-            </div>
-          </>
-        )}
+        <Container>
+          <ReactToPrint
+            trigger={() => {
+              return (
+                <a href="#">
+                  <h5 class="text-center mb-4 mt-2" >🖨️Imprimir</h5>
+                </a>
+              );
+            }}
+            content={() => componentRef.current}
+            documentTitle="TALLER DE SIMULACION DE SISTEMAS"
+            pageStyle="print"
+          />
+        </Container>
+        <Container ref={componentRef}>
+          {esta() ? (
+            <>
+              <h2 className="text-center mb-4 mt-2" style={{ fontWeight:'bold'}}>{nombre}</h2>
+              <Tabla listas={list} />
+              <Pie datos={data} />
+              <Bar datos={data} />
+            </>
+          ) : (
+            <>
+              <div className="Container">
+                <h2>Bienvenido a iVote</h2>
+                <h2>
+                  Los resultados de la votación aún no se encuentran
+                  disponibles.
+                </h2>
+                <h2>¿Por qué no intentas más tarde?</h2>
+              </div>
+            </>
+          )}
+        </Container>
         
       </div>
     );
   }
-}
+};
 
-export default Home
+export default Home;

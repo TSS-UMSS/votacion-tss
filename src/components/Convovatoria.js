@@ -75,9 +75,7 @@ export default function Convovatoria() {
         listita.push(id)
         limpiarFechas(id)
       })
-      //console.log('la listita es:')
-      //console.log(listita);
-      
+
       await addDoc(collection(firestore, "AdministrarFechas"), {
         NombreEleccion : nombreEleccion,
         DescripcionEleccion: descripcion,
@@ -90,6 +88,21 @@ export default function Convovatoria() {
         Activo : true
       });
       
+      await setDoc(doc(firestore, "PartidosAceptados", "zzzVotoNulo"), {
+        Cant : 0,
+        Color : '#F7F4F3',
+        HashSemilla : '91c1b0f15e40c9d49afbf4c8996fb924',
+        NombreCandidato : 'Voto Nulo',
+        Sigla : 'Nulo'
+      });
+      await setDoc(doc(firestore, "PartidosAceptados", "zzzVotoBlanco"), {
+        Cant : 0,
+        Color : '#FF8A71',
+        HashSemilla : '16f0cd50b749a8fa718b061f50bf2072',
+        NombreCandidato : 'Voto Blanco',
+        Sigla : 'Blanco'
+      });
+
       
     } catch (error) {
       console.log(error.code);
@@ -105,8 +118,8 @@ export default function Convovatoria() {
               <h2>Convocar a elecciones</h2>
             </div>
             <div className='contLoginBody pt-1'>
-              <Campos NombreCampo="Nombre de la elección: " Holder='ingrese su nombre' setValue={setNombreEleccion}/>
-              <Campos NombreCampo="Descripción:" Holder='ingrese una descripción'setValue={setDescripcion}/>
+              <Campos NombreCampo="Nombre de la elección: " Holder='Ingrese el nombre' setValue={setNombreEleccion}/>
+              <Campos NombreCampo="Descripción:" Holder='Ingrese una descripción'setValue={setDescripcion}/>
               {/* <Campos NombreCampo="Nombre de la organización" Holder='ingrese su CI'/> */}
               <Fecha NombreCampo="Fecha de votación: " setValue={setFechaVoto}/>
               <Hora NombreCampo="Hora inicio de votación: " setValue={setInivoto}/>

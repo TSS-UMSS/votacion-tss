@@ -7,13 +7,10 @@ const Login = () =>{
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     
-    //const {user, setUser}=useContext(UserContext)
+
     const { loginUser,user }=useContext(UserContext)
     const navegate = useNavigate();
-    /*const handleClickLogin=()=>{
-        setUser(true)
-        navegate("/")
-    }*/
+    
     useEffect(() => {
        if(user){
         navegate("/")
@@ -21,15 +18,20 @@ const Login = () =>{
     }, [user]);
     const handleSubmit = async(e) =>{
         e.preventDefault();
-        console.log("procesando form:" , email, password);
+
         try{
             await loginUser(email,password);
-            console.log("usuario logeado");
+
             navegate("/")
         }catch(error){
-            console.log(error.code);
-            alert("Esta cuenta no esta registrada")
-            //alert("Esta email ya esta registrado")
+            if(error.code === "auth/wrong-password"){
+                alert("Contraseña incorrecta")
+            }else{
+                alert("Esta cuenta no esta registrada")
+            }
+            //console.log(error.code);
+            
+
         }
     }
 
@@ -43,12 +45,12 @@ const Login = () =>{
                 <Form  onSubmit={handleSubmit} >
                 <Form.Group id="email">
                     <Form.Label><h5>Correo electrónico</h5></Form.Label>
-                    <Form.Control type="email" required onChange={e=>setEmail(e.target.value)}/>
+                    <Form.Control placeholder="Ingrese su correo" type="email" required onChange={e=>setEmail(e.target.value)}/>
                 </Form.Group>
                 <br/>
                 <Form.Group id="password" >
                     <Form.Label><h5>Contraseña</h5></Form.Label>
-                    <Form.Control type="password" required minLength={6} onChange={e=>setPassword(e.target.value)}/>
+                    <Form.Control placeholder="Ingrese su contraseña" type="password" required minLength={6} onChange={e=>setPassword(e.target.value)}/>
                 </Form.Group>
                 <br/>
                 <Form.Group className="text-center">

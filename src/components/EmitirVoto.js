@@ -1,7 +1,7 @@
 import React from 'react'
 import Candidato from './Candidato'
 import '../Styles/EmitirVoto.css'
-import { Button } from 'react-bootstrap'
+import { Button, Spinner } from 'react-bootstrap'
 import NoDisponible from './NoDisponible'
 import Modal from './Modal'
 import ModalConfiramcion from './ModalConfirmacion'
@@ -34,31 +34,31 @@ export default function EmitirVoto(props) {
       index === position ? !item : item
     );
     setCheckedState(updatedCheckedState);
-    //console.log(checkedState);
   }
 
   const guardarVoto = (hashGenerado,voteDate) =>{
     var votoElegido;
     var primeraOcurrencia = checkedState.indexOf(true);
     if(primeraOcurrencia == -1){
-      //es voto en blanco
+      //Es voto en blanco
+      guardarBlanco();
       votoElegido = 'Blanco';
     }else{
       var ultimaOcurrencia = checkedState.lastIndexOf(true);
       if(primeraOcurrencia != ultimaOcurrencia){
         //Es voto nulo
+        guardarNulo();
         votoElegido = 'Nulo';
       }else{
-        //votoElegido = 'Valido';
+
         const foundCandidato = lista.find(element => element.ix === primeraOcurrencia);
         const foundName = foundCandidato.sigla;
         const foundId = foundCandidato.idCandidato;
         votoElegido = foundName;
         guardarEnPartidos(foundId);
-        //console.log(foundName);
+
       }
     }
-    //console.log(votoElegido);
     guardarEnUsuario(votoElegido,hashGenerado,voteDate);
   }
 
@@ -91,72 +91,76 @@ export default function EmitirVoto(props) {
         });
       }
     }
-    //console.log("Datos actualizados en la coleccion Usuario Comun");
 
   }
 
   const guardarEnPartidos = async (idPartido) =>{
-    //console.log(idPartido);
     const thePartido = doc(firestore, "PartidosAceptados", idPartido);
     const docSnap = await getDoc(thePartido);
-    if (docSnap.exists()) {
-      //console.log("Document data:", docSnap.data());
-    } else {
-      // doc.data() will be undefined in this case
-      //console.log("No such document!");
-    }
     let actualCuenta = docSnap.data().Cant;
     let newCuenta = actualCuenta+1;
     await updateDoc(thePartido, {
       Cant : newCuenta
     });
-    //console.log("Cantidad de votos ",newCuenta);
-  }
+  };
+  const guardarBlanco = async () =>{
+    const thePartido = doc(firestore, "PartidosAceptados", "zzzVotoBlanco");
+    const docSnap = await getDoc(thePartido);
+    let actualCuenta = docSnap.data().Cant;
+    let newCuenta = actualCuenta+1;
+    await updateDoc(thePartido, {
+      Cant : newCuenta
+    });
+  };
+  const guardarNulo = async () =>{
+    const thePartido = doc(firestore, "PartidosAceptados", "zzzVotoNulo");
+    const docSnap = await getDoc(thePartido);
+    let actualCuenta = docSnap.data().Cant;
+    let newCuenta = actualCuenta+1;
+    await updateDoc(thePartido, {
+      Cant : newCuenta
+    });
+  };
 
   useEffect(() => {
     const test = async ()=>{
       try {
-      //const thequery = query(collection(firestore, "UsuarioComun"), where("PostularEstado", "==", true));
-      //const postulantesAceptados = await getDocs(thequery);
       
       const postulantesAceptados = await getDocs(collection(firestore, "PartidosAceptados"));
-      //console.log(postulantesAceptados.size);
       const listaTemp = [];
       var i = 0;
       postulantesAceptados.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-        let idCandidato = doc.id
-        let nombreCandi = doc.data().NombreCandidato
-        //let apellido = doc.data().Apellido
-        //let nombreCandi = nombre + " " + apellido
-        let nombrePartid = doc.data().NombrePartido
-        let sigla = doc.data().Sigla
-        let cargo = doc.data().Cargo
-        let Foto = doc.data().Foto
-        let ix = i
-        let dato = {idCandidato,nombrePartid,sigla,cargo,nombreCandi,ix,Foto}
-        listaTemp.push(dato);
-        i = i + 1;
-        //checkedState.push(false);
+
+        if(doc.data().Sigla != 'Blanco' && doc.data().Sigla != 'Nulo'){
+          let idCandidato = doc.id
+          let nombreCandi = doc.data().NombreCandidato
+          let nombrePartid = doc.data().NombrePartido
+          let sigla = doc.data().Sigla
+          let cargo = doc.data().Cargo
+          let Foto = doc.data().Foto
+          let ix = i
+          let dato = {idCandidato,nombrePartid,sigla,cargo,nombreCandi,ix,Foto}
+          listaTemp.push(dato);
+          i = i + 1;
+        }
+
       })
-      //checkedState = new Array(i+1).fill(false);
+
       for (var j = 0; j < i; j++) {
         checkedState.push(false);
       }
-      //console.log("Lista Temporal",listaTemp);
-      //console.log(i);
+
       setList(listaTemp);
       } catch (error) {
-        //console.log(error)
+        console.log(error)
       }
     }
     test(); 
-    //console.log("estos son los datos")
-    //console.log(lista)
+
    }, [bandera]);
 
    useEffect(() => {
-    //console.log(checkedState);
+
     },[checkedState]);
   
    useEffect(() => {
@@ -166,7 +170,7 @@ export default function EmitirVoto(props) {
     const q = query(collection(firestore, "AdministrarFechas"), where("Activo", "==", true));
     const usuariosComun = await getDocs(q);
     usuariosComun.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
+
       let id = doc.id
       let NombreEleccion = doc.data().NombreEleccion
       let DescripcionEleccion= doc.data().DescripcionEleccion
@@ -183,12 +187,9 @@ export default function EmitirVoto(props) {
     } catch (error) {
       console.log(error)
     }
-    //console.log("estas soon las fechas")
-    //console.log(listaFechas)
-    //console.log(listaFechas[0].FechaIniPostulacion.toString())
+ 
     let hoy = new Date()
-    //console.log("este es el dato")
-    //console.log(hoy)
+
     let dia = parseInt(hoy.getDate())
     let mes = parseInt(( hoy.getMonth() + 1 ))
     let año = parseInt(hoy.getFullYear())
@@ -199,20 +200,16 @@ export default function EmitirVoto(props) {
     let fechaVoto = listaFechas[0].FechaIniEleccion.toString().split('-')
     let inicio = listaFechas[0].HoraIniEleccion.toString().split(':')
     let fin = listaFechas[0].HoraFinEleccion.toString().split(':')
-    //console.log("este es el split: ")
-    //console.log(fechaVoto)
-    //console.log(inicio)
-    //console.log(fin)
-    //console.log(dia)
-    //console.log(hora)
-    //console.log(minutos)
-    //console.log(horaCompleta)
-    // console.log(parseInt(inicio[0]+''+inicio[1]))
-    // console.log(parseInt(fin[0]+''+fin[1]))
+
+    let contador = 0
+    const coleccionPA = await getDocs(collection(firestore, "PartidosAceptados"));
+    coleccionPA.forEach((doc) => {
+      contador = contador +1;
+    });
     let idUsuario = getAuth(app).currentUser.uid;
     const usuarioActual = doc(firestore, "UsuarioComun", idUsuario);
     const DatosUser = await getDoc(usuarioActual);
-    if((año===parseInt(fechaVoto[0]) && mes===parseInt(fechaVoto[1]) && dia===parseInt(fechaVoto[2])) && horaCompleta >= parseInt(inicio[0]+inicio[1]) && horaCompleta <= parseInt(fin[0]+fin[1]) && DatosUser.data().VotoEstado===false){
+    if((año===parseInt(fechaVoto[0]) && mes===parseInt(fechaVoto[1]) && dia===parseInt(fechaVoto[2])) && horaCompleta >= parseInt(inicio[0]+inicio[1]) && horaCompleta <= parseInt(fin[0]+fin[1]) && DatosUser.data().VotoEstado===false && contador > 0){
       setValido(true)
     }else{
       setValido(false)
@@ -230,18 +227,25 @@ export default function EmitirVoto(props) {
   }
   cumple();
 }, []);
-if (isStart) {return <h4 className="p-1">Cargando...</h4>}else{
-  if (valido){
+if (isStart) {return (
+  <div className="Container">
+    <Spinner animation="border" roles="status">
+      <span className="visually-hidden">Cargando...</span>
+    </Spinner>
+    <h4 className="p-1">Cargando...</h4>
+  </div>
+);}else{
+  if (valido && lista.length > 0){
     return (
       <div className='Container'>
         
-        <h1>¡Comienza con  I Vote!</h1>
+        <h1>Emitir Voto</h1>
         <h5 className='mt-2'>{descripcion}</h5>
         <div className='Cont-Titulo'>
           <div className='tester'>
-          <h5>Marca al candidato de tu preferencia.</h5>
-          <h5>Puedes votar en blanco si esa es tu elección.</h5>
-          <h5>Si marcas más de una casilla se contara como voto "nulo".</h5>
+          <h6>Marca al candidato de tu preferencia.</h6>
+          <h6>Puedes votar en blanco si esa es tu elección.</h6>
+          <h6>Si marcas más de una casilla se contara como voto "nulo".</h6>
           </div>
           <div className='testers'></div>
           <div className='testers'></div>
@@ -257,9 +261,9 @@ if (isStart) {return <h4 className="p-1">Cargando...</h4>}else{
           foto={tupla.Foto}
           handlePadree={handlePadre}
           />  
-          )) }      
+          )) }
         </div>
-        <Button variant="primary" size='lg' className='mb-4' onClick={() => setModalShow(true)}>¡Guardar Voto!</Button>
+        <Button variant="primary" size='lg' className='mb-4' onClick={() => setModalShow(true)}>Guardar Voto</Button>
 
         <Modal
         show={modalShow}
@@ -278,7 +282,7 @@ if (isStart) {return <h4 className="p-1">Cargando...</h4>}else{
   }else{
     return (
       <div className='Container'>
-          <NoDisponible mensaje="Hola! por el momento no se encuentra disponible una votacion ¿porque no intentas mas tarde?"/>
+          <NoDisponible mensaje="La jornada electoral no se encuentra disponible. Verifica el horario de votación y recuerda que no puedes votar por segunda vez."/>
       </div>
     
     ) 

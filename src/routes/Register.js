@@ -17,6 +17,7 @@ const Register = () => {
   const [celular, setCelular] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [repetPassword, setRepetPassword] = useState("");
   const [hash, setHash] = useState("");
 
   const [UsuarioComun, setUsuarioComun] = useState([]);
@@ -39,35 +40,29 @@ const Register = () => {
     }
     return hashGenerado;
   }
-function pruebita (){
-  let fecha = new Date()
-  console.log(fecha);
-  console.log(parseInt(Math.random() * (10000000)));
-}
-pruebita();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("procesando form:", email, password);
+    if(repetPassword === password){
     try {
       await registerUser(email, password);
-      console.log("usuario creado");
       let HashSemillaGenerado = await HMACSHA256();
       navegate("/");
-      
-      console.log('HashSemillaGenerado');
-      console.log(HashSemillaGenerado);
-      //console.log(Date().toDateString());
-      //console.log(Math.floor((Math.random() * (10000000))));
       let fecha = new Date()
-     
+      let bady = parseInt(Math.random() * (10000000))
       await setDoc(doc(firestore, "BlockChain", HashSemillaGenerado), {
         HashSemilla : HashSemillaGenerado,
         HashPrevio : '',
         Data : 0,
         Fecha : fecha,
-        Body : parseInt(Math.random() * (10000000)),
+        Body : bady,
         Transaccion : 'Registro',
       });
+      console.log(`HashSemilla : ${HashSemillaGenerado}`)
+      console.log(`HashPrevio : init`)
+      console.log(` Fecha : ${fecha}`)
+      console.log(`Body : ${bady}`)
+      console.log(`Transaccion : Registro`)
 
       const user = getAuth(app).currentUser.uid;
       await setDoc(doc(firestore, "UsuarioComun", user), {
@@ -93,24 +88,14 @@ pruebita();
         HashSemilla: HashSemillaGenerado,
         HashVoto : '',
         HashPostular : '',
+        HashResponse : '',
       });
     } catch (error) {
       console.log(error.code);
       alert("Esta cuenta ya esta registrada")
+    }}else{
+      alert("Error: La contraseña es incorrecta")
     }
-
-    // try {
-    //   await addDoc(usuarioCollection, {
-    //     Nombre: nombre,
-    //     Apellido: apellido,
-    //     CI: ci,
-    //     Celular: celular,
-    //     Correo: email,
-    //     Direccion: direccion,
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
   };
 
 
@@ -127,6 +112,7 @@ pruebita();
             <Form.Group id="nombre">
               <Form.Label><h5 className="mb-0 mt-2">Nombre(s)</h5></Form.Label>
               <Form.Control
+                placeholder="Ingrese su nombre"
                 type="text"
                 required
                 pattern="^[A-Za-zÑñÁáÉéÍíÓóÚú\s]+$"
@@ -138,6 +124,7 @@ pruebita();
             <Form.Group id="apellido">
             <Form.Label><h5 className="mb-0 mt-0">Apellido(s)</h5></Form.Label>
               <Form.Control
+                placeholder="Ingrese su apellido"
                 type="text"
                 required
                 pattern="^[A-Za-zÑñÁáÉéÍíÓóÚú\s]+$"
@@ -148,6 +135,7 @@ pruebita();
             <Form.Group id="ci">
               <Form.Label><h5 className="mb-0 mt-3">Nro. C.I.</h5></Form.Label>
               <Form.Control
+                placeholder="Ingrese su número de CI"
                 type="text"
                 required
                 pattern="[0-9]+$"
@@ -159,6 +147,7 @@ pruebita();
             <Form.Group id="email">
               <Form.Label><h5 className="mb-0 mt-3">Correo electrónico</h5></Form.Label>
               <Form.Control
+                placeholder="Ingrese su correo"
                 type="email"
                 required
                 onChange={(e) => setEmail(e.target.value)}
@@ -167,6 +156,7 @@ pruebita();
             <Form.Group id="direccion">
               <Form.Label><h5 className="mb-0 mt-3">Dirección</h5></Form.Label>
               <Form.Control
+                placeholder="Ingrese su dirección"
                 type="text"
                 required
                 onChange={(e) => setDireccion(e.target.value)}
@@ -175,6 +165,7 @@ pruebita();
             <Form.Group id="celular">
               <Form.Label><h5 className="mb-0 mt-3">Número de teléfono</h5></Form.Label>
               <Form.Control
+                placeholder="Ingrese su número de teléfono"
                 type="text"
                 required
                 pattern="[0-9]+$"
@@ -186,12 +177,24 @@ pruebita();
             <Form.Group id="password">
               <Form.Label><h5 className="mb-0 mt-3">Contraseña</h5></Form.Label>
               <Form.Control
+                placeholder="Ingrese su contraseña"
                 type="password"                
                 required
                 minLength={6}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Form.Group>
+            <Form.Group id="password">
+              <Form.Label><h5 className="mb-0 mt-3">Confirmar contraseña</h5></Form.Label>
+              <Form.Control
+                placeholder="Repita su contraseña"
+                type="password"                
+                required
+                minLength={6}
+                onChange={(e) => setRepetPassword(e.target.value)}
+              />
+            </Form.Group>
+            
 
             <br />
             <Form.Group className="text-center">
@@ -204,24 +207,7 @@ pruebita();
         </Card.Body>
       </Card>
     </div>
-    /**<>
-            <h1>Register</h1>
-            <form onSubmit={handleSubmit}>
-                <input 
-                    type="email" 
-                    placeholder="Ingrese email"
-                    value={email}
-                    onChange={e=>setEmail(e.target.value)}
-                />
-                <input 
-                    type="password" 
-                    placeholder="Ingrese password"
-                    value={password}
-                    onChange={e=>setPassword(e.target.value)}
-                />
-                <button type="submit">Register</button>
-            </form>
-        </>*/
+    
   );
 };
 

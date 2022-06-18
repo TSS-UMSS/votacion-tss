@@ -48,7 +48,7 @@ export default function Modales(props) {
       minutes = '0'+minutes;
     }
     const voteDate = day + '/' + month + '/' + year + ' ' + hours + ':' + minutes;
-    console.log(voteDate);
+
     return voteDate;
   }
 
@@ -57,22 +57,28 @@ export default function Modales(props) {
       const test = doc(firestore, "UsuarioComun", user);
       const DatosUser = await getDoc(test);
       const hashG = await HMACSHA256()
-      let data = 2;
+      let data = 3;
       let fecha = new Date()
 
-      let elHashPrevio = DatosUser.data().HashPostular;
+      let elHashPrevio = DatosUser.data().HashResponse;
       if(elHashPrevio == ''){
         elHashPrevio = DatosUser.data().HashSemilla;
         data = 1;
       }
-
+      let bady = parseInt(Math.random() * (10000000));
       await setDoc(doc(firestore, "BlockChain", hashG), {
         Hash : hashG,
         HashPrevio : elHashPrevio,
         Data : data,
         Fecha : fecha,
-        Body : parseInt(Math.random() * (10000000)),
+        Body : bady,
+        Transaccion : 'Voto',
       });
+      console.log(`Hash : ${hashG}`)
+      console.log(`HashPrevio : ${elHashPrevio}`)
+      console.log(` Fecha : ${fecha}`)
+      console.log(`Body : ${bady}`)
+      console.log(`Transaccion : Voto`)
 
       await updateDoc(test, {
         HashVoto : hashG,
@@ -94,13 +100,13 @@ export default function Modales(props) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Espera!!!
+            ¡Espera!
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4>¿Estas seguro de que deseas continuar?</h4>
+          <h4>¿Estás seguro de que deseas continuar?</h4>
           <p>
-            una vez realizado el voto no puedes volver a emitir tu voto..! estas seguro de esta accion?
+            Una vez realizado el voto no puedes cambiarlo. ¿Estás seguro de esta acción?
           </p>
         </Modal.Body>
         <Modal.Footer>
