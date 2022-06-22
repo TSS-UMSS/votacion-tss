@@ -58,11 +58,13 @@ const NavbarComp=()=> {
             let consulta = doc(firestore, "UsuarioComun", usuario);
             let datosUser = await getDoc(consulta);
             let HashUser = datosUser.data().HashSemilla;
+            await setHashNavbar(HashUser);
             let HashGUser = HashUser.toString();
-            setHashNavbar(HashGUser);
+            await setHashNavbar(HashGUser);
           }
         }
       };
+      getHash();
       getHash();
     }, [user]);
 

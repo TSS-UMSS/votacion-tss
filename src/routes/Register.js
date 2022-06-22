@@ -71,7 +71,6 @@ const Register = () => {
         Celular: celular,
         Correo: email,
         Direccion: direccion,
-        HashSemilla:"",
         Nombre: nombre,
         PostularEstado:false,
         PuedePostular : true,
